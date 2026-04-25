@@ -542,7 +542,6 @@ html,body{height:100%;background:var(--bg);color:var(--white);font-family:'Helve
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
@@ -743,34 +742,13 @@ function renderArtistGrid(board){
     }
     grid.appendChild(tile);
   });
-  var addTile=document.createElement('div');addTile.className='artist-add';
+  var addTile=document.createElement('div');
+  addTile.className='artist-add';
   addTile.innerHTML='<span style="font-size:1.6rem">+</span><span>הוסף אמן</span>';
-  addTile.style.cssText+='cursor:pointer;position:relative;z-index:10;';
-  addTile.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();addArtist();},{passive:false});
-  addTile.addEventListener('click',function(e){e.stopPropagation();addArtist();});
+  addTile.addEventListener('click',function(){addArtist();});
+  addTile.addEventListener('touchend',function(e){e.preventDefault();addArtist();},{passive:false});
   grid.appendChild(addTile);
   board.appendChild(grid);
-
-  // Enable drag reorder — long press 600ms to start drag
-  if(typeof Sortable!=='undefined'){
-    Sortable.create(grid,{
-      animation:150,
-      delay:600,
-      delayOnTouchOnly:true,
-      filter:'.artist-add',
-      preventOnFilter:false,
-      onEnd:function(evt){
-        if(evt.item.classList.contains('artist-add')) return;
-        var newOrder=[];
-        grid.querySelectorAll('.artist-tile[data-id]').forEach(function(el){
-          var art=state.artists.find(function(a){return a.id===el.dataset.id;});
-          if(art)newOrder.push(art);
-        });
-        state.artists=newOrder;
-        save();showToast('↕ סדר עודכן');
-      }
-    });
-  }
 }
 function renderArtistCards(board){
   board.innerHTML='';var art=state.artists.find(function(a){return a.id===state.activeArtist;});if(!art)return;
