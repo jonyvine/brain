@@ -745,17 +745,22 @@ function renderArtistGrid(board){
   });
   var addTile=document.createElement('div');addTile.className='artist-add';
   addTile.innerHTML='<span style="font-size:1.6rem">+</span><span>הוסף אמן</span>';
-  addTile.style.cursor='pointer';
+  addTile.style.cssText+='cursor:pointer;position:relative;z-index:10;';
+  addTile.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();addArtist();},{passive:false});
   addTile.addEventListener('click',function(e){e.stopPropagation();addArtist();});
   grid.appendChild(addTile);
   board.appendChild(grid);
 
-  // Enable drag reorder
+  // Enable drag reorder — long press 600ms to start drag
   if(typeof Sortable!=='undefined'){
     Sortable.create(grid,{
-      animation:150,delay:200,delayOnTouchOnly:true,
+      animation:150,
+      delay:600,
+      delayOnTouchOnly:true,
       filter:'.artist-add',
-      onEnd:function(){
+      preventOnFilter:false,
+      onEnd:function(evt){
+        if(evt.item.classList.contains('artist-add')) return;
         var newOrder=[];
         grid.querySelectorAll('.artist-tile[data-id]').forEach(function(el){
           var art=state.artists.find(function(a){return a.id===el.dataset.id;});
